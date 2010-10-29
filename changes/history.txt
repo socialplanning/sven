@@ -1,0 +1,151 @@
+0.7 (2010-01-26)
+================
+
+ * Added bazaar backend and tests.
+
+ * Removed experimental mercurial backend. I only need "something
+   faster than subversion" and Bazaar's worldview fits my brain
+   better, so I doubt I'll be maintaining the mercurial backend.
+   If you're using it, please complain loudly, because I didn't
+   know that you were using it.
+
+ * client.kind(uri) now takes an optional integer `rev` parameter
+   like everything else.
+
+ * The strange dictionary returned by .read() now uses keys named
+   'body' and 'mimetype' instead of 'body' and 'kind'.
+
+ * Refactored path normalization in SVN backend classes and added
+   optional `path_fixer` callable argument to constructor.
+
+   If provided, `path_fixer` should expect to be called with a
+   string URI as the only argument. It should return a string URI.
+   It can be used to define filesystem layout policies, like
+   "always store files prefixed under a date hierarchy" or "add a
+   file extension."
+
+   I'm probably overabstracting too early, though, so I won't be
+   surprised if I scrap this idea.
+
+ * When writing contents to a file, Sven used to append a newline
+   to the contents whether or not the contents already ended with
+   a newline. Now, sven will only append a newline if the content
+   doesn't already end in a newline.
+
+ * Implemented custom resource properties for bazaar backend,
+   because it doesn't have any concept like `svn propget/propset`.
+
+   Resource properties are implemented as independently versioned
+   files. File and directory properties live in separate locations,
+   because that seemed easier and more logical somehow.
+
+   For a file '/foo/bar/baz.txt' its 'mimetype' property lives at
+   '/.sven-meta/.mimetype/foo/bar/baz.txt' and its 'fleem' property
+   lives at '/.sven-meta/.fleem/foo/bar/baz.txt'.
+
+   For a directory '/foo/bar/' its 'mimetype' property lives at
+   '/foo/bar/.sven-meta/.mimetype' and its 'fleem' property lives
+   at '/foo/bar/.sven-meta/.fleem'.
+
+   Note that for normal files read and written directly by the user,
+   sven's default behavior appends a newline to the end of the file
+   if there is none. For these metadata files, sven does not append
+   a newline to the end of the file.
+
+0.6 (2009-11-24)
+================
+
+ * SvnBackend.__init__ no longer takes a 'svnuri' argument to the
+   remote repository as its first positional argument; it's not
+   used anywhere. This is a backwards-incompatible change.
+
+ * The strange ad-hoc JSONish object returned by SvnAccess.ls had an
+   extra `/` prefixed to the object's 'href' erroneously; now fixed.
+
+ * Experimental implementation of the Sven API for Mercurial backends 
+   now lives in sven.hg.HgAccess; it is documented in hg-doctest.txt
+   and has a few small differences from the SvnAccess backend. It is
+   highly incomplete (think of it as an alpha stage) and requires
+   `mercurial` to be installed. Sven does not install mercurial, just
+   like it doesn't install pysvn.
+
+0.5
+===
+
+The 0.5 release does not exist. Sven went straight to 0.6 after 0.4.1
+with some backwards-incompatible changes.
+
+0.4.1 (2009-08-10)
+==================
+
+ * Fixed several embarrassing typos in the 0.4 release
+
+0.4 (2009-08-10)
+================
+
+ * Added simple_backend.FSAccess class, which partially implements
+   the SVNAccess API, but on a plain old filesystem. Needs tests
+   and documentation, among other things (e.g. justification)
+
+ * Refactored SvnAccess to split out recently-added options for
+   update_before/after_write into logically separate component
+
+ * SvnAccess.set_kind and .write now return the pysvn.Revision of
+   the (last) commit instead of None
+
+ * Added SvnAccessEventEmitter class which executes a list of callback
+   functions at the end of every successful .write and .set_kind action
+
+   Callbacks should have the signature 
+    (uri, contents, msg, kind, (pre_rev, post_rev))
+
+
+0.3.1 (2009-07-28)
+==================
+
+ * Fixed bug: SvnAccess.ls was returning its contents with absolute URIs, 
+   rather than URIs relative to the root of the repository.
+
+
+0.3 (2009-07-25)
+================
+
+ * Removed `SvnAccess.update_after_write` knob and instead set default value of True
+   to the `update_after_write` argument to `SvnAccess.write`; callers can implement
+   alternatives trivially by subclassing.
+
+ * Added `update_before_write` argument to .write with default value of True. Turn
+   this off as well as `update_after_write` if you want to manage synchronicity in
+   exchange for potentially significant performance improvements.
+
+ * Added `default_commit_message` argument to `SvnAccess` constructor. The default
+   is "foom".
+
+ * Throw `exc.ResourceChanged` exceptions when a file is found to be out of date
+   during a write operation (which will only happen if `update_before_write` is
+   unset by the caller) and revert local changes if this happens, to restore the
+   checkout to an unconflicting state.
+
+
+0.2 (2009-07-25)
+================
+
+ * Now with doctests!
+
+ * `SvnAccess.write` now supports an optional `update_after_write` argument.
+   If set to a True value, calls to .write will end with an `svn up` to
+   resynchronize the checkout with the repository. Default is False.
+
+ * `SvnAccess.__init__` now supports an optional `update_after_write` argument.
+   If set to a True value, all calls to .write will end with an `svn up`
+   even if .write is not sent a True `update_after_write` value. Default
+   is True, so if you are concerned with performance and willing to maintain
+   synchronicity on your own, you should explicitly set this to False.
+
+ * `SvnAccess.__init__` no longer executes a silent `os.chdir`.
+
+
+0.1.2 (2009-07-24)
+==================
+
+First release.
