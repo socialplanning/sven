@@ -357,7 +357,8 @@ class BzrAccess(object):
 
     def write(self, uri, contents, msg=None, mimetype=None,
               use_newline=True, binary=False,
-              commit=True):
+              commit=True,
+              metadata=None):
         uri = self.normalized(uri)
         absolute_uri = '/'.join((self.checkout_dir, uri))
 
@@ -390,8 +391,13 @@ class BzrAccess(object):
         if not msg: # wish we could just do `if msg is None`, but we can't.
             msg = self.default_message
 
+        metadata = metadata or {}
         if mimetype is not None:
-            self.set_mimetype(uri, mimetype, msg=msg)
+            assert 'mimetype' not in metadata
+            metadata['mimetype'] = mimetype
+
+        for key, val in metadata.items():
+            self.propset(uri, key, val, msg=msg)
 
         if not commit:
             return
