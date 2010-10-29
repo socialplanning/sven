@@ -170,9 +170,7 @@ class BzrAccess(object):
             x.unlock()
 
         data = data.read()
-
-        mimetype = self.mimetype(uri)
-        return dict(body=data, mimetype=mimetype)
+        return data
 
     def ls(self, uri, rev=None):
         """
