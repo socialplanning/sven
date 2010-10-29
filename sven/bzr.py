@@ -336,13 +336,13 @@ class BzrAccess(object):
         uri = self.normalized(uri)
 
         return self.write('/'.join((uri, '.sven-meta/.%s' % prop)),
-                          val, use_newline=False)
+                          val, use_newline=False, commit=False)
 
     def _file_propset(self, uri, prop, val, msg=None):
         uri = self.normalized(uri)
 
         return self.write('/'.join(('.sven-meta/.%s' % prop, uri)),
-                          val, use_newline=False)
+                          val, use_newline=False, commit=False)
 
     def propset(self, uri, prop, val, msg=None):
         uri = self.normalized(uri)
@@ -356,7 +356,8 @@ class BzrAccess(object):
         return self.propset(uri, 'mimetype', mimetype, msg=msg)
 
     def write(self, uri, contents, msg=None, mimetype=None,
-              use_newline=True, binary=False):
+              use_newline=True, binary=False,
+              commit=True):
         uri = self.normalized(uri)
         absolute_uri = '/'.join((self.checkout_dir, uri))
 
@@ -371,7 +372,7 @@ class BzrAccess(object):
         if parent_dir and not os.path.exists(absolute_parent_dir):
             os.makedirs(absolute_parent_dir)
             x.smart_add([absolute_parent_dir])
-            x.commit("Auto-creating directories")
+            #x.commit("Auto-creating directories")
 
         mode = 'w'
         if binary is True:
@@ -389,13 +390,16 @@ class BzrAccess(object):
         if not msg: # wish we could just do `if msg is None`, but we can't.
             msg = self.default_message
 
+        if mimetype is not None:
+            self.set_mimetype(uri, mimetype, msg=msg)
+
+        if not commit:
+            return
+
         try:
             rev_id = x.commit(message=msg)
         except (BoundBranchOutOfDate, ConflictsInTree), e:
             raise ResourceChanged(uri)
-
-        if mimetype is not None:
-            self.set_mimetype(uri, mimetype, msg=msg)
 
         return R(x.branch.revision_id_to_revno(rev_id))
 
