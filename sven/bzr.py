@@ -362,6 +362,17 @@ class BzrAccess(object):
     def set_mimetype(self, uri, mimetype, msg=None):
         return self.propset(uri, 'mimetype', mimetype, msg=msg)
 
+    def commit(self, uri, msg=None):
+        x = self.client
+        if msg is None:
+            msg = self.default_message
+        try:
+            rev_id = x.commit(message=msg)
+        except (BoundBranchOutOfDate, ConflictsInTree), e:
+            raise ResourceChanged(uri)
+
+        return R(x.branch.revision_id_to_revno(rev_id))
+
     def write(self, uri, contents, msg=None, mimetype=None,
               use_newline=True, binary=False,
               commit=True,
