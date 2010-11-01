@@ -55,6 +55,15 @@ class BzrAccess(object):
         client = workingtree.WorkingTree.open(self.checkout_dir)
         return client
 
+    def iter_content(self, uri):
+        """
+        Yield the (rev, content) at uri in each revision it changed,
+        from most recent to first
+        """
+        revisions = self.revisions(uri)
+        for rev in revisions:
+            yield rev, self.read(uri, rev=rev)
+
     def revisions(self, uri):
         """
         revisions at which this file changed

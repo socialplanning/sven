@@ -231,14 +231,7 @@ keep files up-to-date before writing, though:
 So there are a couple of approaches possible here if you prefer to keep
 auto-updates off for performance reasons. One simple approach would be
 to assume that writes will succeed until proven otherwise, while retaining
-sven's natural inclination to clobber conflicting changesets, viz.:
+sven's natural inclination to clobber conflicting changesets.
 
-NOTE: THIS TEST IS FAILING! I don't know why, but I don't really use this
-yet, so I'm just going to go with it. It might have to do with lingering
-uncommitted changes in client2's checkout from the previous failure.
-
-   >>> try:
-   ...     client2.write('file', 'booga booga boo', update_before_write=False)
-   ... except:
-   ...     client2.write('file', 'booga booga boo', update_before_write=True)
-   <Revision kind=number 21>
+>>> [i for i in client.iter_content("file")]
+[(20, 'version 1\n2\n3\n'), (19, 'version 1\n5\n3\n'), (18, 'feeble feeblefeed\n'), (17, 'version 1\n2\n3\n'), (4, 'now with metadata\n'), (3, 'second version\n'), (1, 'first version\n')]
