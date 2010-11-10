@@ -1,3 +1,2 @@
- * Added boolean `binary` argument to .write() with default False.
-   If binary=True, use_newline:=False, and the file is written in
-   mode='wb' instead of mode='w'.
+ * Make version numbers sane for bzr backend (one commit per write,
+   regardless of how many intermediate directories were created)

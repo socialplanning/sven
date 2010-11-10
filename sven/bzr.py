@@ -173,10 +173,12 @@ class BzrAccess(object):
         try:
             data = x.get_file(path)
         except IOError, e:
+            x.unlock()
             if e.errno == 21:
                 raise NotAFile(uri)
-        finally:
-            x.unlock()
+            raise
+
+        x.unlock()
 
         data = data.read()
         return data
