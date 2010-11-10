@@ -1,3 +1,9 @@
+0.8.1 (2010-11-10)
+==================
+
+ * Make version numbers sane for bzr backend (one commit per write,
+   regardless of how many intermediate directories were created)
+
 0.8 (2010-08-26)
 ================
 
