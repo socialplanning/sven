@@ -280,7 +280,8 @@ class BzrAccess(object):
                                               author=author,
                                               message=message,
                                               timestamp=timestamp,
-                                              id=uri))
+                                              id=uri,
+                                              revprops=revision.rev.properties))
             return ListLogFormatter
 
         from bzrlib.builtins import cmd_log
@@ -378,7 +379,7 @@ class BzrAccess(object):
     def write(self, uri, contents, msg=None, mimetype=None,
               use_newline=True, binary=False,
               commit=True,
-              metadata=None):
+              metadata=None, revprops=None):
         uri = self.normalized(uri)
         absolute_uri = '/'.join((self.checkout_dir, uri))
 
@@ -423,7 +424,7 @@ class BzrAccess(object):
             return
 
         try:
-            rev_id = x.commit(message=msg)
+            rev_id = x.commit(message=msg, revprops=revprops)
         except (BoundBranchOutOfDate, ConflictsInTree), e:
             raise ResourceChanged(uri)
 

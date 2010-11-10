@@ -5,6 +5,8 @@
 
  * Tweaks for Python 2.4 compatibility
 
+ * Add support for writing revprops
+
 0.7.2 (2010-01-26)
 ==================
 
