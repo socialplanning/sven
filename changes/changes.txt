@@ -1,0 +1,8 @@
+trunk
+=====
+
+ * Added sven.exc.MissingRepository exception, to be thrown when accessing a nonexistent repo.
+
+ * Added kwarg `check_repo` to BzrAccess.__init__ with default `False`.  If set to True,
+   the constructor will check for the existence of a repository and throw a MissingRepository
+   if it does not exist.

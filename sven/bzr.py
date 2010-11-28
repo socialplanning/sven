@@ -1,7 +1,7 @@
 from operator import attrgetter
 import os
 from bzrlib import workingtree
-from bzrlib.errors import NoSuchRevision, BoundBranchOutOfDate, ConflictsInTree
+from bzrlib.errors import NoSuchRevision, BoundBranchOutOfDate, ConflictsInTree, NotBranchError
 from bzrlib.inventory import InventoryDirectory
 from sven.exc import *
 
@@ -18,7 +18,8 @@ class BzrAccess(object):
     def __init__(self, checkout_dir,
                  config_location=None,
                  default_commit_message=None,
-                 path_fixer=None):
+                 path_fixer=None,
+                 check_repo=False):
 
         if config_location and not config_location.startswith('/'):
             config_location = os.path.join(checkout_dir, config_location)
@@ -34,6 +35,12 @@ class BzrAccess(object):
         self.default_message = default_commit_message or "foom"
 
         self.path_fixer = path_fixer
+
+        if check_repo:
+            try:
+                self.client
+            except NotBranchError:
+                raise MissingRepository(self.checkout_dir)
 
     def normalized(self, path):
         """

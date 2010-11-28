@@ -2,6 +2,11 @@
 'sven.exc': svn-related exceptions
 """
 
+class MissingRepository(Exception):
+    def __init__(self, path):
+        Exception.__init__(self)
+        self.path = path
+
 class NotAFile(IOError):
     def __init__(self, uri):
         IOError.__init__(self, 21, "Is a directory", uri)
