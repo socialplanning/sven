@@ -386,7 +386,8 @@ class BzrAccess(object):
     def write(self, uri, contents, msg=None, mimetype=None,
               use_newline=True, binary=False,
               commit=True,
-              metadata=None, revprops=None):
+              metadata=None, revprops=None, 
+              author=None, timestamp=None):
         uri = self.normalized(uri)
         absolute_uri = '/'.join((self.checkout_dir, uri))
 
@@ -418,6 +419,7 @@ class BzrAccess(object):
 
         if not msg: # wish we could just do `if msg is None`, but we can't.
             msg = self.default_message
+        msg = msg.strip().replace('\r', '') # bzr breaks otherwise
 
         metadata = metadata or {}
         if mimetype is not None:
@@ -431,7 +433,8 @@ class BzrAccess(object):
             return
 
         try:
-            rev_id = x.commit(message=msg, revprops=revprops)
+            rev_id = x.commit(message=msg, revprops=revprops, 
+                              author=author, timestamp=timestamp)
         except (BoundBranchOutOfDate, ConflictsInTree), e:
             raise ResourceChanged(uri)
 

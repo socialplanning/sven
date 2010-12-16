@@ -3,3 +3,15 @@
  * Added kwarg `check_repo` to BzrAccess.__init__ with default `False`.  If set to True,
    the constructor will check for the existence of a repository and throw a MissingRepository
    if it does not exist.
+
+ * Add `author` kwarg to BzrAccess.write with default `None`.  It can be set to a string value
+   which will be used as the "author" of the commit.  (The system-level `bzr whoami` output 
+   will still be used for the separate "contributor" of the commit.)  This is equivalent to the
+   command-line `bzr commit --author`.
+
+ * Add `timestamp` kwarg to BzrAccess.write with default `None`.  It can be set to a numerical
+   timestamp, which will override the current system time in the commit.  This is equivalent to
+   the command-line `bzr commit --timestamp`.
+
+ * Manually strip all "\r" characters from the commit message; bzr seems to break if any are 
+   present.
