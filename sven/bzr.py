@@ -387,7 +387,7 @@ class BzrAccess(object):
               use_newline=True, binary=False,
               commit=True,
               metadata=None, revprops=None, 
-              author=None, timestamp=None):
+              author=None, timestamp=None, committer=None):
         uri = self.normalized(uri)
         absolute_uri = '/'.join((self.checkout_dir, uri))
 
@@ -432,9 +432,12 @@ class BzrAccess(object):
         if not commit:
             return
 
+        authors = None
+        if author is not None:
+            authors = [author]
         try:
             rev_id = x.commit(message=msg, revprops=revprops, 
-                              author=author, timestamp=timestamp)
+                              authors=authors, timestamp=timestamp, committer=committer)
         except (BoundBranchOutOfDate, ConflictsInTree), e:
             raise ResourceChanged(uri)
 
