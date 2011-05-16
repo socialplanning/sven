@@ -3,11 +3,12 @@ import sys, os
 
 version = '0.9'
 
-long_description = open('README.txt').read()
-new_in_this_version = open('changes/changes.txt').read()
-history = open('changes/history.txt').read()
+try:
+    long_description = open('README.txt').read()
+    new_in_this_version = open('changes/changes.txt').read()
+    history = open('changes/history.txt').read()
 
-long_description = """
+    long_description = """
 %s
 
 New in this version
@@ -20,6 +21,8 @@ History
 
 %s
 """ % (long_description, new_in_this_version, history)
+except:
+    long_description = ""
 
 setup(name='sven',
       version=version,
