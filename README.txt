@@ -56,4 +56,4 @@ can be run as a test suite by `python sven/backend.py`) and ./sven/bzr.txt
 
      python sven/backend.py
 
-Follow sven on github: <http://github.com/ejucovy/sven>
+Follow sven on github: <http://github.com/socialplanning/sven>
