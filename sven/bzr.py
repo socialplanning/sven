@@ -233,7 +233,7 @@ class BzrAccess(object):
             if last_change < rev:
                 raise ResourceUnchanged(uri, last_change)
 
-        contents = ["%s/%s" % (uri, key) for key in dir.children.keys()]
+        contents = [(uri and (uri + "/") or '') + key for key in dir.children.keys()]
 
         globs = []
         for obj in contents:
