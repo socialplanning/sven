@@ -86,6 +86,13 @@ class BzrAccess(object):
 
         def get_formatter(lst):
             class ListLogFormatter(LogFormatter):
+
+                supports_merge_revisions = True
+                preferred_levels = 1
+                supports_delta = True
+                supports_tags = True
+                supports_diff = True
+
                 def __init__(self, *args, **kw):
                     LogFormatter.__init__(self, *args, **kw)
                     self._loglist = lst
@@ -108,6 +115,7 @@ class BzrAccess(object):
         log.run(file_list=[absolute_uri],
                 revision=rev and [RevisionSpec.from_string(str(rev))] or None,
                 log_format = get_formatter(foo),
+                verbose=True,
                 )
 
         return foo
@@ -275,6 +283,13 @@ class BzrAccess(object):
 
         def get_formatter(lst):
             class ListLogFormatter(LogFormatter):
+
+                supports_merge_revisions = True
+                preferred_levels = 1
+                supports_delta = True
+                supports_tags = True
+                supports_diff = True
+
                 def __init__(self, *args, **kw):
                     LogFormatter.__init__(self, *args, **kw)
                     self._loglist = lst
@@ -283,11 +298,18 @@ class BzrAccess(object):
                     author = revision.rev.committer  # @@@ what about get_apparent_authors?
                     message = revision.rev.message.rstrip('\r\n')
                     timestamp = revision.rev.timestamp
+
+                    id = uri
+                    if revision.delta:
+                        changed = [i[0] for i in revision.delta.added] \
+                            + [i[0] for i in revision.delta.modified]
+                        id = changed[-1]
+
                     self._loglist.append(dict(version=revno,
                                               author=author,
                                               message=message,
                                               timestamp=timestamp,
-                                              id=uri,
+                                              id=id,
                                               revprops=revision.rev.properties))
             return ListLogFormatter
 
@@ -305,9 +327,10 @@ class BzrAccess(object):
                 revision=rev and [RevisionSpec.from_string("1"),
                                   RevisionSpec.from_string(str(rev))] or None,
                 log_format = get_formatter(foo),
+                verbose=True,
                 )
 
-        return [dict(href=uri, fields=i) for i in foo]
+        return [dict(href=i['id'], fields=i) for i in foo]
 
     def mimetype(self, uri, rev=None):
         return self.propget(uri, 'mimetype', rev=rev)
