@@ -295,7 +295,12 @@ class BzrAccess(object):
                     self._loglist = lst
                 def log_revision(self, revision):
                     revno = int(revision.revno)
-                    author = revision.rev.committer  # @@@ what about get_apparent_authors?
+
+                    try:
+                        author = revision.rev.get_apparent_authors()[0]
+                    except IndexError:
+                        author = revision.rev.committer
+
                     message = revision.rev.message.rstrip('\r\n')
                     timestamp = revision.rev.timestamp
 
