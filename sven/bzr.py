@@ -1,7 +1,7 @@
 from operator import attrgetter
 import os
 from bzrlib import workingtree
-from bzrlib.errors import NoSuchRevision, BoundBranchOutOfDate, ConflictsInTree, NotBranchError
+from bzrlib.errors import NoSuchRevision, BoundBranchOutOfDate, ConflictsInTree, NotBranchError, BzrCommandError
 from bzrlib.inventory import InventoryDirectory
 from sven.exc import *
 
@@ -32,7 +32,7 @@ class BzrAccess(object):
         #os.chdir(checkout_dir)
         self.checkout_dir = checkout_dir
 
-        self.default_message = default_commit_message or "foom"
+        self.default_message = default_commit_message or ""
 
         self.path_fixer = path_fixer
 
@@ -328,12 +328,15 @@ class BzrAccess(object):
 
         absolute_uri = os.path.join(self.checkout_dir, self.normalized(uri))
 
-        log.run(file_list=[absolute_uri],
-                revision=rev and [RevisionSpec.from_string("1"),
-                                  RevisionSpec.from_string(str(rev))] or None,
-                log_format = get_formatter(foo),
-                verbose=True,
-                )
+        try:
+            log.run(file_list=[absolute_uri],
+                    revision=rev and [RevisionSpec.from_string("1"),
+                                      RevisionSpec.from_string(str(rev))] or None,
+                    log_format = get_formatter(foo),
+                    verbose=True,
+                    )
+        except BzrCommandError, e:
+            raise NoSuchResource(uri)
 
         return [dict(href=i['id'], fields=i) for i in foo]
 
