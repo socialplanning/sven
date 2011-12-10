@@ -305,9 +305,12 @@ class BzrAccess(object):
                     timestamp = revision.rev.timestamp
 
                     id = uri
+
                     if revision.delta:
                         changed = [i[0] for i in revision.delta.added] \
                             + [i[0] for i in revision.delta.modified]
+                        if not len(changed):
+                            return
                         id = changed[-1]
 
                     self._loglist.append(dict(version=revno,
